@@ -25,6 +25,8 @@
         <attr name="textColor" />
         <attr name="autoFitSize" />
         <attr name="curved" />
+        <attr name="maskEnable" format="boolean"/>
+        <attr name="maskColor" format="color" />
     </declare-styleable>
 
     <declare-styleable name="DateTimePickerView">
@@ -42,6 +44,7 @@
             <enum name="twenty" value="20"/>
             <enum name="thirty" value="30"/>
         </attr>
+        <attr name="dateTimeWithUnit" format="boolean"/>
     </declare-styleable>
 
     <declare-styleable name="DivisionPickerView">

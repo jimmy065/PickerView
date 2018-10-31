@@ -62,10 +62,12 @@ public class PickerView extends View {
     private int itemHeight;
     private int textSize;
     private int textColor = Color.BLACK;
+    private int maskColor = Color.TRANSPARENT;
     private Typeface typeface;
     private boolean isCyclic;
     private boolean autoFitSize;
     private boolean curved;
+    private boolean maskEnable;
     private Drawable selectedItemDrawable;
     private int[] DEFAULT_GRADIENT_COLORS = new int[]{0xcffafafa, 0x9ffafafa, 0x5ffafafa};
     private int[] gradientColors = DEFAULT_GRADIENT_COLORS;
@@ -296,6 +298,16 @@ public class PickerView extends View {
         }
     }
 
+    public void setMaskColor(int maskColor) {
+        if (this.maskColor != maskColor) {
+            this.maskColor = maskColor;
+            gradientColors = new int[]{maskColor,maskColor,maskColor};
+            topMask = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, gradientColors);
+            bottomMask = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, gradientColors);
+            invalidate();
+        }
+    }
+
     public void setTypeface(Typeface typeface) {
         if (this.typeface != typeface) {
             this.typeface = typeface;
@@ -321,6 +333,14 @@ public class PickerView extends View {
     public void setCurved(boolean curved) {
         if (this.curved != curved) {
             this.curved = curved;
+            invalidate();
+            requestLayout();
+        }
+    }
+
+    public void setMaskEnable(boolean maskEnable) {
+        if (this.maskEnable != maskEnable) {
+            this.maskEnable = maskEnable;
             invalidate();
             requestLayout();
         }
@@ -415,7 +435,10 @@ public class PickerView extends View {
         }
 
         drawItems(canvas);
-        drawMasks(canvas);
+
+        if(maskEnable) {
+            drawMasks(canvas);
+        }
     }
 
     private void drawItems(Canvas canvas) {

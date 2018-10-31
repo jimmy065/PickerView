@@ -48,6 +48,8 @@ public class DateTimePickerView extends PickerViewGroup {
     private static final int PRESERVE_FLAG_TIME = 1 << 4;
     private int tryPreserveValuesFlag = 0;
 
+    private static boolean dateTimeWithUnit = true;
+
     private boolean shouldTryPreserve(int field) {
         switch (field) {
             case FIELD_MONTH:
@@ -60,6 +62,7 @@ public class DateTimePickerView extends PickerViewGroup {
                 return (tryPreserveValuesFlag & PRESERVE_FLAG_MINUTE) != 0;
             case FIELD_TIME:
                 return (tryPreserveValuesFlag & PRESERVE_FLAG_TIME) != 0;
+            default:
         }
         return false;
     }
@@ -87,6 +90,7 @@ public class DateTimePickerView extends PickerViewGroup {
             case FIELD_HOUR:
                 tryPreserveValuesFlag |= PRESERVE_FLAG_MINUTE;
                 break;
+            default:
         }
     }
 
@@ -128,6 +132,7 @@ public class DateTimePickerView extends PickerViewGroup {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.DateTimePickerView);
         type = typedArray.getInt(R.styleable.DateTimePickerView_type, TYPE_YEAR_MONTH_DAY);
         minutesInterval = typedArray.getInt(R.styleable.DateTimePickerView_minutesInterval, FIVE);
+        dateTimeWithUnit = typedArray.getBoolean(R.styleable.DateTimePickerView_dateTimeWithUnit, true);
         typedArray.recycle();
 
         buildViews(context);
@@ -342,7 +347,7 @@ public class DateTimePickerView extends PickerViewGroup {
 
                     private int stepOffset() {
                         if (!isAtStartDateAndHour()) return 0;
-                        int fix = startDate.get(Calendar.MINUTE) % minutesInterval != 0 ? 1: 0;
+                        int fix = startDate.get(Calendar.MINUTE) % minutesInterval != 0 ? 1 : 0;
                         return startDate.get(Calendar.MINUTE) / minutesInterval + fix;
                     }
 
@@ -388,20 +393,21 @@ public class DateTimePickerView extends PickerViewGroup {
             String text = "";
             switch (field) {
                 case FIELD_YEAR:
-                    text = String.format(Locale.getDefault(), "%d年", value);
+                    text = String.format(Locale.getDefault(), dateTimeWithUnit ? "%d年" : "%d", value);
                     break;
                 case FIELD_MONTH:
-                    text = String.format(Locale.getDefault(), "%02d月", value + 1);
+                    text = String.format(Locale.getDefault(), dateTimeWithUnit ? "%02d月" : "%2d", value + 1);
                     break;
                 case FIELD_DAY:
-                    text = String.format(Locale.getDefault(), "%02d日", value);
+                    text = String.format(Locale.getDefault(), dateTimeWithUnit ? "%02d日" : "%2d", value);
                     break;
                 case FIELD_HOUR:
-                    text = String.format(Locale.getDefault(), "%02d点", value);
+                    text = String.format(Locale.getDefault(), dateTimeWithUnit ? "%02d点" : "%2d", value);
                     break;
                 case FIELD_MINUTE:
-                    text = String.format(Locale.getDefault(), "%02d分", value);
+                    text = String.format(Locale.getDefault(), dateTimeWithUnit ? "%02d分" : "%2d", value);
                     break;
+                default:
             }
             return text;
         }
@@ -580,7 +586,7 @@ public class DateTimePickerView extends PickerViewGroup {
                 yearPickerView.setOnSelectedItemChangedListener(new PickerView.OnSelectedItemChangedListener() {
                     @Override
                     public void onSelectedItemChanged(PickerView pickerView, int previousPosition, int selectedItemPosition) {
-                        CalendarField field = (CalendarField)  pickerView.getAdapter().getItem(selectedItemPosition);
+                        CalendarField field = (CalendarField) pickerView.getAdapter().getItem(selectedItemPosition);
                         selectedDate.set(Calendar.YEAR, field.value);
                         addFlags(FIELD_YEAR);
                         monthPickerView.notifyDataSetChanged();
