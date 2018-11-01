@@ -36,12 +36,15 @@ public class DivisionPickerView extends PickerViewGroup {
         typedArray.recycle();
 
         provincePicker = new PickerView(context);
+        provincePicker.setAdapter(provisionAdapter);
         settlePickerView(provincePicker);
 
         cityPicker = new PickerView(context);
+        cityPicker.setAdapter(cityAdapter);
         settlePickerView(cityPicker);
 
         divisionPicker = new PickerView(context);
+        divisionPicker.setAdapter(divisionAdapter);
         settlePickerView(divisionPicker);
 
         configure();
@@ -77,22 +80,25 @@ public class DivisionPickerView extends PickerViewGroup {
      */
     public void setDivisions(List<? extends Division> divisions) {
         provisionAdapter.setDivisions(divisions);
-        provincePicker.setAdapter(provisionAdapter);
 
         cityAdapter.setDivisions(provisionAdapter.getItem(provincePicker.getSelectedItemPosition()).getChildren());
-        cityPicker.setAdapter(cityAdapter);
 
         divisionAdapter.setDivisions(cityAdapter.getItem(cityPicker.getSelectedItemPosition()).getChildren());
-        divisionPicker.setAdapter(divisionAdapter);
 
         PickerView.OnSelectedItemChangedListener listener = new PickerView.OnSelectedItemChangedListener() {
             @Override
             public void onSelectedItemChanged(PickerView pickerView, int previousPosition, int selectedItemPosition) {
                 if (pickerView == provincePicker) {
-                    cityAdapter.setDivisions(provisionAdapter.getItem(provincePicker.getSelectedItemPosition()).getChildren());
-                    divisionAdapter.setDivisions(cityAdapter.getItem(cityPicker.getSelectedItemPosition()).getChildren());
+                    if (provisionAdapter.getItem(provincePicker.getSelectedItemPosition()) != null) {
+                        cityAdapter.setDivisions(provisionAdapter.getItem(provincePicker.getSelectedItemPosition()).getChildren());
+                    }
+                    if (cityPicker != null && cityAdapter.getItem(cityPicker.getSelectedItemPosition()) != null) {
+                        divisionAdapter.setDivisions(cityAdapter.getItem(cityPicker.getSelectedItemPosition()).getChildren());
+                    }
                 } else if (pickerView == cityPicker) {
-                    divisionAdapter.setDivisions(cityAdapter.getItem(cityPicker.getSelectedItemPosition()).getChildren());
+                    if (cityPicker != null && cityAdapter.getItem(cityPicker.getSelectedItemPosition()) != null) {
+                        divisionAdapter.setDivisions(cityAdapter.getItem(cityPicker.getSelectedItemPosition()).getChildren());
+                    }
                 }
 
                 if (onSelectedDivisionChangedListener != null) {

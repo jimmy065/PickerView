@@ -18,6 +18,6 @@ public class DivisionAdapter extends PickerView.Adapter<Division> {
 
     @Override
     public Division getItem(int index) {
-        return divisions.get(index);
+        return divisions == null ? null : divisions.get(index);
     }
 }
